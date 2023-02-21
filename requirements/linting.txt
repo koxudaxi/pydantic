@@ -16,11 +16,9 @@ click==8.1.3
     # via black
 distlib==0.3.6
     # via virtualenv
-exceptiongroup==1.1.0
-    # via hypothesis
 filelock==3.9.0
     # via virtualenv
-hypothesis==6.66.0
+hypothesis==6.68.2
     # via -r requirements/linting.in
 identify==2.5.17
     # via pre-commit
@@ -56,14 +54,8 @@ sortedcontainers==2.4.0
     # via hypothesis
 tokenize-rt==5.0.0
     # via pyupgrade
-tomli==2.0.1
-    # via
-    #   black
-    #   mypy
 typing-extensions==4.4.0
-    # via
-    #   mypy
-    #   pydantic-core
+    # via mypy
 virtualenv==20.17.1
     # via pre-commit
 
