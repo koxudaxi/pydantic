@@ -48,7 +48,7 @@ mkdocs==1.4.2
     #   mkdocs-material
 mkdocs-exclude==1.0.2
     # via -r requirements/docs.in
-mkdocs-material==9.0.10
+mkdocs-material==9.0.13
     # via -r requirements/docs.in
 mkdocs-material-extensions==1.1.1
     # via mkdocs-material
@@ -78,8 +78,6 @@ six==1.16.0
     # via python-dateutil
 sqlalchemy==2.0.1
     # via -r requirements/docs.in
-tomli==2.0.1
-    # via autoflake
 typing-extensions==4.4.0
     # via sqlalchemy
 ujson==5.7.0
