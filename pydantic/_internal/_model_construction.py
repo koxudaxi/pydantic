@@ -394,13 +394,9 @@ def inspect_namespace(  # noqa C901
     all_ignored_types = ignored_types + default_ignored_types()
 
     private_attributes: dict[str, ModelPrivateAttr] = {}
-    _anns_obj = namespace.get('__annotations__')
-    if _anns_obj is None:
-        raw_annotations: dict[str, Any] = {}
-    elif isinstance(_anns_obj, dict):
-        raw_annotations = _anns_obj
-    else:
-        raw_annotations = dict(_anns_obj)
+    raw_annotations_obj = namespace.get('__annotations__', {})
+    raw_annotations = dict(raw_annotations_obj) if not isinstance(raw_annotations_obj,
+                                                                  dict) else raw_annotations_obj
     if '__root__' in raw_annotations or '__root__' in namespace:
         raise TypeError("To define root models, use `pydantic.RootModel` rather than a field called '__root__'")
 
