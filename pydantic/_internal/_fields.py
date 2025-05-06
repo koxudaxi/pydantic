@@ -3,6 +3,8 @@
 from __future__ import annotations as _annotations
 
 import dataclasses
+import sys
+import typing
 import warnings
 from collections.abc import Mapping
 from copy import copy
@@ -19,6 +21,7 @@ from typing_inspection.introspection import AnnotationSource
 from pydantic import PydanticDeprecatedSince211
 from pydantic.errors import PydanticUserError
 
+from ._decorators import DecoratorInfos
 from ..aliases import AliasGenerator
 from . import _generics, _typing_extra
 from ._config import ConfigWrapper
@@ -34,7 +37,6 @@ if TYPE_CHECKING:
     from ..fields import FieldInfo
     from ..main import BaseModel
     from ._dataclasses import StandardDataclass
-    from ._decorators import DecoratorInfos
 
 
 class PydanticMetadata(Representation):
@@ -232,21 +234,27 @@ def collect_model_fields(  # noqa: C901
     """
     FieldInfo_ = import_cached_field_info()
 
+    fields: dict[str, FieldInfo] = {}
+    class_vars: set[str] = set()
+
     bases = cls.__bases__
     parent_fields_lookup: dict[str, FieldInfo] = {}
     for base in reversed(bases):
         if model_fields := getattr(base, '__pydantic_fields__', None):
             parent_fields_lookup.update(model_fields)
 
-    type_hints = _typing_extra.get_model_type_hints(cls, ns_resolver=ns_resolver)
+    # Use standard typing.get_type_hints as it handles PEP 649 correctly
+    global_ns = sys.modules[cls.__module__].__dict__.copy()
+    local_ns = dict(vars(cls)) # Use class dictionary for local scope
+    type_hints = typing.get_type_hints(cls, globalns=global_ns, localns=local_ns, include_extras=True)
 
     # https://docs.python.org/3/howto/annotations.html#accessing-the-annotations-dict-of-an-object-in-python-3-9-and-older
     # annotations is only used for finding fields in parent classes
     annotations = cls.__dict__.get('__annotations__', {})
-    fields: dict[str, FieldInfo] = {}
+    for ann_name, ann_type in type_hints.items():
+        # Since standard get_type_hints evaluates, we assume evaluated=True
+        evaluated = True
 
-    class_vars: set[str] = set()
-    for ann_name, (ann_type, evaluated) in type_hints.items():
         if ann_name == 'model_config':
             # We never want to treat `model_config` as a field
             # Note: we may need to change this logic if/when we introduce a `BareModel` class with no
