@@ -444,6 +444,8 @@ def inspect_namespace(  # noqa C901
         elif var_name in base_class_vars:
             continue
         elif var_name not in raw_annotations:
+            if sys.version_info >= (3, 14):
+                continue
             if var_name in base_class_fields:
                 raise PydanticUserError(
                     f'Field {var_name!r} defined on a base class was overridden by a non-annotated attribute. '
